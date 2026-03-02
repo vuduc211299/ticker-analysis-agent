@@ -1,0 +1,18 @@
+[project]
+name = "ai-agent-test"
+version = "0.2.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "google-genai",
+    "langgraph",
+    "numpy",
+    "pandas",
+    "python-dotenv",
+    "requests",
+    "uvicorn",
+]
+
+[tool.pyright]
+pythonVersion = "3.11"
+extraPaths = ["."]

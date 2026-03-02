@@ -1,0 +1,3 @@
+Extract exactly one cryptocurrency ticker symbol from the user's text.
+Return ONLY valid JSON: {"ticker": "<TICKER>"}
+If unclear, return ONLY valid JSON: {"ticker": ""}
