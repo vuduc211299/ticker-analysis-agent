@@ -1,21 +1,15 @@
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from fastapi import HTTPException
 
 from schemas.chart import ChartPoint, ChartSeries
-from services.coingecko import fetch_market_chart, get_supported_tickers
+from services.coingecko import fetch_market_chart, find_supported_ticker_in_text
 
 
 def extract_ticker_from_query(query: str) -> str:
-    supported = set(get_supported_tickers())
-    tokens = re.findall(r"[A-Za-z0-9]+", query.upper())
-    for token in tokens:
-        if token in supported:
-            return token
-    return ""
+    return find_supported_ticker_in_text(query)
 
 
 def to_points(raw_prices: list[Any]) -> list[ChartPoint]:

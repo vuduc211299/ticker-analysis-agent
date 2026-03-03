@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
 from typing import Any
 
@@ -94,6 +95,46 @@ _COMMON_MAP: dict[str, str] = {
     "WIF": "dogwifcoin",
 }
 
+_NAME_MAP: dict[str, str] = {
+    "bitcoin": "BTC",
+    "ethereum": "ETH",
+    "binance coin": "BNB",
+    "solana": "SOL",
+    "ripple": "XRP",
+    "dogecoin": "DOGE",
+    "cardano": "ADA",
+    "avalanche": "AVAX",
+    "polkadot": "DOT",
+    "polygon": "MATIC",
+    "chainlink": "LINK",
+    "uniswap": "UNI",
+    "shiba inu": "SHIB",
+    "litecoin": "LTC",
+    "cosmos": "ATOM",
+    "near": "NEAR",
+    "arbitrum": "ARB",
+    "optimism": "OP",
+    "aptos": "APT",
+    "sui": "SUI",
+    "tron": "TRX",
+    "filecoin": "FIL",
+    "pepe": "PEPE",
+    "dogwifcoin": "WIF",
+}
+
+
+def _normalized_key(value: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", value.lower())
+
+
+_NORMALIZED_NAME_MAP: dict[str, str] = {
+    _normalized_key(name): ticker for name, ticker in _NAME_MAP.items()
+}
+
+_NORMALIZED_ID_MAP: dict[str, str] = {
+    _normalized_key(coin_id): ticker for ticker, coin_id in _COMMON_MAP.items()
+}
+
 
 def get_supported_tickers() -> list[str]:
     """Return the highlighted/whitelisted ticker symbols."""
@@ -101,15 +142,61 @@ def get_supported_tickers() -> list[str]:
 
 
 def is_supported_ticker(ticker: str) -> bool:
-    """Check whether a ticker is in the highlighted/whitelisted list."""
-    return ticker.upper() in _COMMON_MAP
+    """Check whether input maps to a highlighted symbol or full coin name."""
+    return bool(normalize_supported_ticker(ticker))
+
+
+def normalize_supported_ticker(value: str) -> str:
+    """Normalize ticker-like input to a supported ticker symbol.
+
+    Examples:
+    - BTC -> BTC
+    - bitcoin -> BTC
+    - matic-network -> MATIC
+    """
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+
+    upper = raw.upper()
+    if upper in _COMMON_MAP:
+        return upper
+
+    key = _normalized_key(raw)
+    if key in _NORMALIZED_NAME_MAP:
+        return _NORMALIZED_NAME_MAP[key]
+    if key in _NORMALIZED_ID_MAP:
+        return _NORMALIZED_ID_MAP[key]
+
+    return ""
+
+
+def find_supported_ticker_in_text(text: str) -> str:
+    """Best-effort extraction of a supported ticker/full-name from free text."""
+    raw = str(text or "")
+    if not raw:
+        return ""
+
+    token_candidates = re.findall(r"[A-Za-z0-9-]+", raw)
+    for token in token_candidates:
+        normalized = normalize_supported_ticker(token)
+        if normalized:
+            return normalized
+
+    lower_text = raw.lower()
+    for name, ticker in sorted(_NAME_MAP.items(), key=lambda item: len(item[0]), reverse=True):
+        if re.search(rf"\b{re.escape(name)}\b", lower_text):
+            return ticker
+
+    return ""
 
 
 def resolve_coin_id(ticker: str) -> str:
     """Resolve a ticker symbol (e.g. ``BTC``) to a CoinGecko coin ID."""
-    upper = ticker.upper()
-    if upper in _COMMON_MAP:
-        return _COMMON_MAP[upper]
+    upper = str(ticker or "").upper()
+    normalized_ticker = normalize_supported_ticker(ticker)
+    if normalized_ticker in _COMMON_MAP:
+        return _COMMON_MAP[normalized_ticker]
 
     try:
         data = _cg_get("/search", {"query": ticker})

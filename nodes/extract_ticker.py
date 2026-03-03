@@ -8,8 +8,13 @@ import re
 
 from nodes.state import AgentState
 from nodes.prompts import load_prompt
+from services.coingecko import (
+    find_supported_ticker_in_text,
+    get_supported_tickers,
+    normalize_supported_ticker,
+    resolve_coin_id,
+)
 from services.llm import call_llm
-from services.coingecko import get_supported_tickers, is_supported_ticker, resolve_coin_id
 
 log = logging.getLogger(__name__)
 
@@ -19,28 +24,33 @@ def extract_ticker(state: AgentState) -> AgentState:
     errors: list[str] = list(state.get("errors", []))
     ticker = ""
 
-    system_prompt = load_prompt("extract_ticker")
-    user_prompt = f"User input: {raw_input}"
+    direct_ticker = find_supported_ticker_in_text(raw_input)
+    if direct_ticker:
+        ticker = direct_ticker
 
-    try:
-        llm_output = call_llm(system_prompt, user_prompt)
-        log.info("LLM output: %s", llm_output)
+    if not ticker:
+        system_prompt = load_prompt("extract_ticker")
+        user_prompt = f"User input: {raw_input}"
 
-        match = re.search(r"\{.*\}", llm_output, re.DOTALL)
-        if match:
-            parsed = json.loads(match.group(0))
-            candidate = str(parsed.get("ticker", "")).upper().strip()
-            candidate = re.sub(r"[^A-Z0-9]", "", candidate)
-            if 1 < len(candidate) <= 10:
-                ticker = candidate
+        try:
+            llm_output = call_llm(system_prompt, user_prompt)
+            log.info("LLM output: %s", llm_output)
+
+            match = re.search(r"\{.*\}", llm_output, re.DOTALL)
+            if match:
+                parsed = json.loads(match.group(0))
+                candidate = str(parsed.get("ticker", "")).strip()
+                normalized = normalize_supported_ticker(candidate)
+                if normalized:
+                    ticker = normalized
+                else:
+                    errors.append("LLM returned invalid ticker.")
             else:
-                errors.append("LLM returned invalid ticker.")
-        else:
-            errors.append("LLM ticker output was not JSON.")
-    except Exception as exc:
-        errors.append(f"Ticker extraction LLM error: {exc}.")
+                errors.append("LLM ticker output was not JSON.")
+        except Exception as exc:
+            errors.append(f"Ticker extraction LLM error: {exc}.")
 
-    if not is_supported_ticker(ticker):
+    if not ticker:
         allowed = ", ".join(get_supported_tickers())
         message = (
             "Sorry, I can't help you analysis requested coin. "
