@@ -4,7 +4,8 @@ from fastapi import APIRouter
 
 from schemas.chart import ChartDataResponse, ChartRequest
 from services.api_errors import raise_unsupported_ticker
-from services.chart_service import extract_ticker_from_query, get_chart_series_for_views
+from services.chart_service import (extract_ticker_from_query,
+                                    get_chart_series_for_views)
 from services.coingecko import is_supported_ticker, resolve_coin_id
 
 router = APIRouter()

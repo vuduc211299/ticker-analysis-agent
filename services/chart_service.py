@@ -5,7 +5,8 @@ from typing import Any
 from fastapi import HTTPException
 
 from schemas.chart import ChartPoint, ChartSeries
-from services.coingecko import fetch_market_chart, find_supported_ticker_in_text
+from services.coingecko import (fetch_market_chart,
+                                find_supported_ticker_in_text)
 
 
 def extract_ticker_from_query(query: str) -> str:

@@ -1,4 +1,4 @@
-"""Node 1 — Use Gemini to extract a ticker symbol and resolve it to a CoinGecko ID."""
+"""Node 1 — Use the configured LLM to extract a ticker symbol and resolve it to a CoinGecko ID."""
 
 from __future__ import annotations
 
@@ -6,14 +6,11 @@ import json
 import logging
 import re
 
-from nodes.state import AgentState
 from nodes.prompts import load_prompt
-from services.coingecko import (
-    find_supported_ticker_in_text,
-    get_supported_tickers,
-    normalize_supported_ticker,
-    resolve_coin_id,
-)
+from nodes.state import AgentState
+from services.coingecko import (find_supported_ticker_in_text,
+                                get_supported_tickers,
+                                normalize_supported_ticker, resolve_coin_id)
 from services.llm import call_llm
 
 log = logging.getLogger(__name__)

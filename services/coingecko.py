@@ -12,18 +12,10 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from config import COINGECKO_API_KEY, COINGECKO_BASE_URL
-from indicators import (
-    compute_ema,
-    compute_fibonacci,
-    compute_ma,
-    compute_macd,
-    compute_mfi,
-    compute_obv,
-    compute_ohlc_indicators,
-    compute_rsi,
-    compute_support_resistance,
-    to_series,
-)
+from indicators import (compute_ema, compute_fibonacci, compute_ma,
+                        compute_macd, compute_mfi, compute_obv,
+                        compute_ohlc_indicators, compute_rsi,
+                        compute_support_resistance, to_series)
 
 log = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-"""Node 3 — Gemini-powered market-data analysis."""
+"""Node 3 — LLM-powered market-data analysis."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import json
 import logging
 from typing import Any
 
-from nodes.state import AgentState
 from nodes.prompts import load_prompt
+from nodes.state import AgentState
 from services.llm import call_llm
 
 log = logging.getLogger(__name__)

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import argparse
 import logging
-
 from typing import cast
 
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from nodes import AgentState, analyzer_node, extract_ticker, fetch_api_data, reporter_node
+from nodes import (AgentState, analyzer_node, extract_ticker, fetch_api_data,
+                   reporter_node)
 
 logging.basicConfig(
     level=logging.INFO,

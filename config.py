@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 _ENV_PATH = Path(__file__).resolve().parent / ".env"
 load_dotenv(_ENV_PATH)
 
-# ─── LLM (Google Gemini) ─────────────────────────────────────────────────────
-LLM_API_KEY: str = os.environ.get("LLM_API_KEY", "")
-LLM_MODEL: str = os.environ.get("LLM_MODEL", "gemini-3-flash-preview")
+# ─── LLM (Ollama) ────────────────────────────────────────────────────────────
+LLM_BASE_URL: str = os.environ.get("LLM_BASE_URL", "http://localhost:11434")
+LLM_MODEL: str = os.environ.get("LLM_MODEL", "qwen3.5:9b")
 
 # ─── CoinGecko ───────────────────────────────────────────────────────────────
 COINGECKO_API_KEY: str = os.environ.get("COINGECKO_API_KEY", "")
