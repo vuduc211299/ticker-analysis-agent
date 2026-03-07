@@ -12,7 +12,7 @@ This app is built around a small agent workflow:
 4. Compute technical indicators.
 5. Use a local LLM to generate analysis and a formatted markdown report.
 
-The current default model is `qwen3.5:9b` served locally with Ollama.
+The current default model is `qwen2.5:3b` served locally with Ollama.
 
 ## Capabilities
 
@@ -89,14 +89,14 @@ Returns time-series data for these views:
 - FastAPI for the API layer
 - CoinGecko Demo API for market data
 - Ollama for local model inference
-- `qwen3.5:9b` as the default local model
+- `qwen2.5:3b` as the default local model
 - LangGraph for workflow orchestration
 
 ## Quick Start
 
 1. Install Python dependencies.
 2. Make sure Ollama is running locally.
-3. Pull or confirm the `qwen3.5:9b` model is available.
+3. Pull or confirm the `qwen2.5:3b` model is available.
 4. Set values in `.env`.
 5. Start the API with Uvicorn.
 
@@ -104,7 +104,7 @@ Default LLM-related environment settings:
 
 ```env
 LLM_BASE_URL=http://localhost:11434
-LLM_MODEL=qwen3.5:9b
+LLM_MODEL=qwen2.5:3b
 ```
 
 ## Notes
